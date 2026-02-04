@@ -1,0 +1,410 @@
+{
+  "info": {
+    "_postman_id": "b6967dcb-bc98-4d4f-8201-9c8e8bfe1f3c",
+    "name": "Recipe Management Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for the Recipe Management Service (Spring Boot). Includes Actuator, Recipes, and Ingredients endpoints. Protected endpoints use a Bearer token."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "recipeId",
+      "value": "1"
+    },
+    {
+      "key": "ingredientId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Actuator (Public)",
+      "item": [
+        {
+          "name": "Actuator - Links",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actuator - Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actuator - Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes (Protected)",
+      "item": [
+        {
+          "name": "Get All Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes",
+                "{{recipeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vegetable Stir Fry\",\n  \"description\": \"A quick and healthy vegetable stir fry\",\n  \"isVegetarian\": true,\n  \"servings\": 4,\n  \"ingredients\": [\"broccoli\", \"carrots\", \"bell peppers\", \"garlic\", \"soy sauce\", \"oil\"],\n  \"instructions\": \"Heat oil in wok. Add garlic and ginger. Stir fry vegetables. Add soy sauce. Serve over rice.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// If your API returns an id, capture it into the recipeId variable.",
+                  "try {",
+                  "  const json = pm.response.json();",
+                  "  if (json && json.id) {",
+                  "    pm.collectionVariables.set('recipeId', String(json.id));",
+                  "  }",
+                  "} catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Recipe Name\",\n  \"description\": \"Updated description\",\n  \"isVegetarian\": true,\n  \"servings\": 4,\n  \"ingredients\": [\"updated\", \"ingredient\", \"list\"],\n  \"instructions\": \"updated instructions\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes",
+                "{{recipeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes/{{recipeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes",
+                "{{recipeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Recipes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isVegetarian\": true,\n  \"servings\": 4,\n  \"includeIngredients\": \"potatoes,onion\",\n  \"excludeIngredients\": \"salmon\",\n  \"instructionsKeyword\": \"oven\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recipes/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "recipes",
+                "search"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ingredients (Protected)",
+      "item": [
+        {
+          "name": "List Ingredients (search + paging)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ingredients?q=gar&mode=STARTS_WITH&page=0&size=20&sort=name,asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ingredients"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "gar"
+                },
+                {
+                  "key": "mode",
+                  "value": "STARTS_WITH"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,asc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ingredient by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Ingredient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"smoked paprika\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ingredients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ingredients"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// If your API returns an id, capture it into the ingredientId variable.",
+                  "try {",
+                  "  const json = pm.response.json();",
+                  "  if (json && json.id) {",
+                  "    pm.collectionVariables.set('ingredientId', String(json.id));",
+                  "  }",
+                  "} catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Ingredient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"paprika\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Ingredient",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ingredients/{{ingredientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ingredients",
+                "{{ingredientId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
