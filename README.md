@@ -2,6 +2,43 @@
 
 A standalone REST API application for managing recipes with advanced filtering capabilities. Built with Spring Boot, Spring Data JPA, and H2 in-memory database.
 
+## Quick Start
+
+### 1) Prerequisites
+- Java **21+**
+- Maven **3.8+**
+
+### 2) Build
+```bash
+mvn clean test
+```
+
+### 3) Run
+Default port is `8081`.
+
+**Option A: Dev mode (recommended for local testing)**
+- Starts without a real JWT issuer.
+- Use a fixed token for protected endpoints: `Authorization: Bearer dev-token`
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+**Option B: Default mode (OAuth2 Resource Server / JWT)**
+- Requires configuring your IdP (issuer or JWKS).
+
+```bash
+mvn spring-boot:run
+```
+
+### 4) URLs
+- API base: `http://localhost:8081`
+- Swagger UI: `http://localhost:8081/swagger-ui.html`
+- Actuator: `http://localhost:8081/actuator`
+- H2 console: `http://localhost:8081/h2-console`
+
+---
+
 ## Overview
 
 This application allows users to:
@@ -30,6 +67,15 @@ This application allows users to:
 - OpenAPI/Swagger UI documentation at `/swagger-ui.html`
 - Interactive API testing and exploration
 - Auto-generated documentation based on annotations
+
+### Observability (Actuator)
+- Actuator base path: `/actuator`
+- Exposed endpoints (current config):
+  - `GET /actuator/health`
+  - `GET /actuator/info`
+
+Notes:
+- `/actuator/info` is populated from `info.*` properties in `src/main/resources/application.properties`.
 
 ### Production-Ready
 - Unit tests with Mockito
@@ -84,6 +130,9 @@ recipe-management-service/
 │           └── repository/
 │               ├── RecipeRepositoryTest.java
 │               └── IngredientRepositoryTest.java
+├── docs/
+│   ├── RecipeManagementService.postman_collection.json
+│   └── RecipeManagementService.postman_environment.json
 ├── pom.xml
 └── README.md
 ```
@@ -101,33 +150,37 @@ recipe-management-service/
 
 ## Installation & Setup
 
-### Prerequisites
-- Java 21 or higher
-- Maven 3.8.0 or higher
+### Application Configuration
+Main config file:
+- `src/main/resources/application.properties`
 
-### Steps
+Key properties:
+- `server.port=8081`
+- H2:
+  - `spring.datasource.url=jdbc:h2:mem:testdb`
+  - `spring.h2.console.enabled=true`
+- Actuator:
+  - `management.endpoints.web.exposure.include=health,info`
 
-1. **Build the project**
-   ```bash
-   mvn clean install
-   ```
+### Run Profiles
+This project uses profiles to make local development easier.
 
-2. **Run the application**
-   ```bash
-   mvn spring-boot:run
-   ```
+- `dev` profile:
+  - does **not** require a real OAuth2 JWT issuer configuration
+  - accepts a fixed token `dev-token`
 
-   By default (as configured in `src/main/resources/application.properties`) the application starts on:
-   - `http://localhost:8081`
+Run with `dev`:
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
-3. **Access Swagger UI**
-   - `http://localhost:8081/swagger-ui.html`
+Default profile:
+- OAuth2 Resource Server (JWT) is enabled
+- you must configure an issuer or JWKS URL (see Security section)
 
-4. **Access H2 Console**
-   - `http://localhost:8081/h2-console`
-   - JDBC URL: `jdbc:h2:mem:testdb`
-   - Username: `sa`
-   - Password: (leave empty)
+### Database / Sample Data
+- Schema: `src/main/resources/schema.sql`
+- Sample data: `src/main/resources/data.sql`
 
 ## Data Model
 
@@ -268,6 +321,13 @@ This API is secured as an **OAuth2 Resource Server** using **JWT bearer tokens**
 
 If you call a protected endpoint without a token you will get **401 Unauthorized**.
 
+### Dev Token (local development)
+If you run with `-Dspring-boot.run.profiles=dev`, the API accepts:
+
+- Header: `Authorization: Bearer dev-token`
+
+This is meant only for local development.
+
 ### Configure your Identity Provider
 
 You must configure **one** of the following properties (recommended via environment variables or profile-specific config):
@@ -300,6 +360,25 @@ Open Swagger UI and click **Authorize**, then paste:
 
 After authorizing, try the protected endpoints directly in Swagger.
 
+## Postman
+
+A Postman collection and environment are included under `docs/`:
+- `docs/RecipeManagementService.postman_collection.json`
+- `docs/RecipeManagementService.postman_environment.json`
+
+Import steps:
+1) Postman → **Import** → select the collection JSON
+2) (Optional) Import the environment JSON and select it
+3) Set environment variable `token`:
+   - dev profile: `dev-token`
+   - default profile: a real JWT access token
+
+Variables:
+- `{{baseUrl}}` (default `http://localhost:8081`)
+- `{{token}}`
+- `{{recipeId}}`
+- `{{ingredientId}}`
+
 ## Testing
 
 ### Run All Tests
@@ -315,10 +394,20 @@ mvn clean test jacoco:report
 Coverage report:
 - `target/site/jacoco/index.html`
 
-## Sample Data
+## Troubleshooting
 
-Data is loaded from `src/main/resources/data.sql` during application startup.
-The SQL is designed to be idempotent (safe to re-run) and respects the many-to-many relationship.
+### /actuator/info is empty
+`/actuator/info` returns `{}` unless you define `info.*` properties.
+This project already provides `info.app.*` in `src/main/resources/application.properties`.
+
+### 401 Unauthorized on /api/**
+All `/api/**` endpoints are protected.
+- Use `-Dspring-boot.run.profiles=dev` and send `Authorization: Bearer dev-token`, or
+- Configure your OAuth2 JWT issuer/JWKS and send a real token.
+
+### H2 Console doesn’t open
+- Ensure the app is running and you’re using: `http://localhost:8081/h2-console`
+- JDBC URL must match config: `jdbc:h2:mem:testdb`
 
 ## Developer Notes
 
@@ -341,4 +430,4 @@ Helpers:
 
 ---
 
-**Last Updated**: February 2, 2026
+**Last Updated**: February 5, 2026

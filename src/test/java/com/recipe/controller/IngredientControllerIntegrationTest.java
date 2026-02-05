@@ -52,7 +52,6 @@ class IngredientControllerIntegrationTest {
 
     @Test
     void listIngredients_supportsPagingAndSorting() throws Exception {
-        // Create 2 uniquely named records
         String a = "it-a-" + UUID.randomUUID();
         String b = "it-b-" + UUID.randomUUID();
 
@@ -65,7 +64,6 @@ class IngredientControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new IngredientDTO(null, a))));
 
-        // Fetch pages (sorted) until we find both entries or we run out of pages
         boolean foundA = false;
         boolean foundB = false;
 

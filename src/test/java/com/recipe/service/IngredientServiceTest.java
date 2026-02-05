@@ -43,7 +43,6 @@ class IngredientServiceTest {
     void setUp() {
         ingredient = Ingredient.builder().id(1L).name("salt").build();
 
-        // mapper stubs
         lenient().when(ingredientMapper.toDTO(any(Ingredient.class))).thenAnswer(invocation -> {
             Ingredient i = invocation.getArgument(0);
             return new IngredientDTO(i.getId(), i.getName());

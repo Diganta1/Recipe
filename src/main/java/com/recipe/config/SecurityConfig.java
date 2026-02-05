@@ -47,7 +47,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll()
                 )
-                // H2 console needs frames
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));
     }
 
@@ -64,10 +63,6 @@ public class SecurityConfig {
 
     /**
      * Dev-only security: accept a fixed bearer token to ease local development.
-     *
-     * Usage:
-     * - Start with: --spring.profiles.active=dev
-     * - Call APIs with: Authorization: Bearer dev-token
      */
     @Bean
     @Profile("dev")
@@ -76,7 +71,6 @@ public class SecurityConfig {
 
         http.addFilterBefore(new DevBearerTokenFilter(), org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
 
-        // No real JWT validation in dev.
         return http.build();
     }
 

@@ -66,7 +66,6 @@ public class RecipeServiceTest {
         testRecipeDTO.setIngredients(List.of("tomato", "basil", "olive oil"));
         testRecipeDTO.setInstructions("Mix ingredients and serve");
 
-        // Mapper stubs (dynamic mapping based on input entity)
         lenient().when(recipeMapper.toDTO(any(Recipe.class))).thenAnswer(invocation -> {
             Recipe r = invocation.getArgument(0);
             RecipeDTO dto = new RecipeDTO();

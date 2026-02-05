@@ -32,7 +32,6 @@ class OAuth2SecurityIntegrationTest {
 
     @Test
     void swaggerUi_isPublic() throws Exception {
-        // Depending on springdoc version/config, /swagger-ui.html may redirect to /swagger-ui/index.html
         mockMvc.perform(get("/swagger-ui.html"))
                 .andExpect(status().is3xxRedirection());
 
