@@ -6,14 +6,17 @@ The Recipe Management Service is a RESTful web application built with Spring Boo
 
 ## High-level Design
 
-### High-level Design Diagram (image)
+### High-level Design Diagram (Dataflow)
 
 
 
 ![High-level design (draw.io export)](docs/Recipe.drawio.png)
 
 
+### High-level Network Diagram (Solution Design on Azure)
 
+
+![High-level design (draw.io export)](docs/Recipe-Azure.png)
 
 ## Architectural Pattern
 
